@@ -8,6 +8,7 @@ import (
 
 	"github.com/blocto/solana-go-sdk/common"
 	"github.com/mr-tron/base58"
+	"github.com/tyler-smith/go-bip39"
 )
 
 var (
@@ -66,4 +67,23 @@ func AccountFromSeed(seed []byte) (Account, error) {
 
 func (a Account) Sign(message []byte) []byte {
 	return ed25519.Sign(a.PrivateKey, message)
+}
+
+func AccountFromMnemonic(mnemonic string) (*Account, error) {
+	seed, err := bip39.NewSeedWithErrorChecking(mnemonic, "")
+	if err != nil {
+		return nil, err
+	}
+
+	n, err := DeriveForPath("m/44'/501'/0'/0'", seed)
+	if err != nil {
+		return nil, err
+	}
+
+	account, err := AccountFromSeed(n.RawSeed())
+	if err != nil {
+		return nil, err
+	}
+
+	return &account, err
 }
