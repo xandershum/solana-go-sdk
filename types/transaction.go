@@ -16,6 +16,11 @@ var (
 
 type Signature []byte
 
+// Verify checks that the signature is valid for the given public key and message.
+func (s Signature) Verify(pubkey common.PublicKey, msg []byte) bool {
+	return ed25519.Verify(pubkey.Bytes(), msg, s[:])
+}
+
 type Transaction struct {
 	Signatures []Signature
 	Message    Message
@@ -92,6 +97,33 @@ func (tx *Transaction) Serialize() ([]byte, error) {
 	output = append(output, messageData...)
 
 	return output, nil
+}
+
+// VerifySignatures verifies all the signatures in the transaction
+// against the pubkeys of the signers.
+func (tx *Transaction) VerifySignatures() error {
+	msg, err := tx.Message.Serialize()
+	if err != nil {
+		return err
+	}
+
+	signers := tx.Message.Signers()
+
+	if len(signers) != len(tx.Signatures) {
+		return fmt.Errorf(
+			"got %v signers, but %v signatures",
+			len(signers),
+			len(tx.Signatures),
+		)
+	}
+
+	for i, sig := range tx.Signatures {
+		if !sig.Verify(signers[i], msg) {
+			return fmt.Errorf("invalid signature by %s", signers[i].String())
+		}
+	}
+
+	return nil
 }
 
 // TransactionDeserialize can deserialize a tx from byte array

@@ -139,6 +139,29 @@ func (m Message) decompileLegacyMessageInstructions() []Instruction {
 	return instructions
 }
 
+func (m Message) IsSigner(account common.PublicKey) bool {
+	// signers always in AccountKeys
+	for idx, acc := range m.Accounts {
+		if acc.Equals(account) {
+			return idx < int(m.Header.NumRequireSignatures)
+		}
+	}
+	return false
+}
+
+// Signers returns the pubkeys of all accounts that are signers.
+func (m Message) Signers() []common.PublicKey {
+	// signers always in AccountKeys
+	out := make([]common.PublicKey, 0, len(m.Accounts))
+	for _, a := range m.Accounts {
+		if m.IsSigner(a) {
+			out = append(out, a)
+		}
+	}
+
+	return out
+}
+
 func MessageDeserialize(messageData []byte) (Message, error) {
 	if len(messageData) == 0 {
 		return Message{}, errors.New("empty message data")

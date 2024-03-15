@@ -22,6 +22,10 @@ func (p PublicKey) String() string {
 	return p.ToBase58()
 }
 
+func (p PublicKey) Equals(pb PublicKey) bool {
+	return p == pb
+}
+
 func PublicKeyFromString(s string) PublicKey {
 	d, _ := base58.Decode(s)
 	return PublicKeyFromBytes(d)
