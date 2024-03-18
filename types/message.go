@@ -31,6 +31,7 @@ type Message struct {
 	Header              MessageHeader
 	Accounts            []common.PublicKey
 	RecentBlockHash     string
+	RecentBlockHeight   uint64
 	Instructions        []CompiledInstruction
 	AddressLookupTables []CompiledAddressLookupTable
 }
