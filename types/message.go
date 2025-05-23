@@ -27,13 +27,13 @@ const (
 )
 
 type Message struct {
-	Version             MessageVersion
-	Header              MessageHeader
-	Accounts            []common.PublicKey
-	RecentBlockHash     string
-	RecentBlockHeight   uint64
-	Instructions        []CompiledInstruction
-	AddressLookupTables []CompiledAddressLookupTable
+	Version                MessageVersion
+	Header                 MessageHeader
+	Accounts               []common.PublicKey
+	RecentBlockHash        string
+	LatestValidBlockHeight uint64
+	Instructions           []CompiledInstruction
+	AddressLookupTables    []CompiledAddressLookupTable
 }
 
 type CompiledAddressLookupTable struct {
