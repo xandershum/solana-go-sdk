@@ -81,6 +81,39 @@ func Create(param CreateParam) types.Instruction {
 	}
 }
 
+// Create2022 creates an associated token account for the given wallet address and 2022 token mint. Return an error if the account exists.
+func Create2022(param CreateParam) types.Instruction {
+	data, err := borsh.Serialize(struct {
+		Instruction Instruction
+	}{
+		Instruction: InstructionCreate,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	return types.Instruction{
+		ProgramID: common.SPLAssociatedTokenAccountProgramID,
+		Accounts: []types.AccountMeta{
+			{PubKey: param.Funder, IsSigner: true, IsWritable: true},
+			{PubKey: param.AssociatedTokenAccount, IsSigner: false, IsWritable: true},
+			{PubKey: param.Owner, IsSigner: false, IsWritable: false},
+			{PubKey: param.Mint, IsSigner: false, IsWritable: false},
+			{PubKey: common.SystemProgramID, IsSigner: false, IsWritable: false},
+			{PubKey: common.Token2022ProgramID, IsSigner: false, IsWritable: false},
+			{PubKey: common.SysVarRentPubkey, IsSigner: false, IsWritable: false},
+		},
+		Data: data,
+	}
+}
+
+func CreateMix(param CreateParam, isToken2022 bool) types.Instruction {
+	if isToken2022 {
+		return Create2022(param)
+	}
+	return Create(param)
+}
+
 type CreateIdempotentParam struct {
 	Funder                 common.PublicKey
 	Owner                  common.PublicKey

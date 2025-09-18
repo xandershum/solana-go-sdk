@@ -119,7 +119,7 @@ type TokenAccount struct {
 }
 
 func TokenAccountFromData(data []byte) (TokenAccount, error) {
-	if len(data) != TokenAccountSize {
+	if len(data) < TokenAccountSize {
 		return TokenAccount{}, ErrInvalidAccountDataSize
 	}
 
@@ -164,7 +164,7 @@ func TokenAccountFromData(data []byte) (TokenAccount, error) {
 }
 
 func DeserializeTokenAccount(data []byte, accountOwner common.PublicKey) (TokenAccount, error) {
-	if accountOwner != common.TokenProgramID {
+	if accountOwner != common.TokenProgramID && accountOwner != common.Token2022ProgramID {
 		return TokenAccount{}, ErrInvalidAccountOwner
 	}
 	return TokenAccountFromData(data)

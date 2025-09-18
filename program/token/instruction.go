@@ -511,6 +511,43 @@ func TransferChecked(param TransferCheckedParam) types.Instruction {
 	}
 }
 
+func TransferChecked2022(param TransferCheckedParam) types.Instruction {
+	data, err := bincode.SerializeData(struct {
+		Instruction Instruction
+		Amount      uint64
+		Decimals    uint8
+	}{
+		Instruction: InstructionTransferChecked,
+		Amount:      param.Amount,
+		Decimals:    param.Decimals,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	accounts := make([]types.AccountMeta, 0, 4+len(param.Signers))
+	accounts = append(accounts, types.AccountMeta{PubKey: param.From, IsSigner: false, IsWritable: true})
+	accounts = append(accounts, types.AccountMeta{PubKey: param.Mint, IsSigner: false, IsWritable: false})
+	accounts = append(accounts, types.AccountMeta{PubKey: param.To, IsSigner: false, IsWritable: true})
+	accounts = append(accounts, types.AccountMeta{PubKey: param.Auth, IsSigner: len(param.Signers) == 0, IsWritable: false})
+	for _, signerPubkey := range param.Signers {
+		accounts = append(accounts, types.AccountMeta{PubKey: signerPubkey, IsSigner: true, IsWritable: false})
+	}
+
+	return types.Instruction{
+		ProgramID: common.Token2022ProgramID,
+		Accounts:  accounts,
+		Data:      data,
+	}
+}
+
+func TransferCheckedMix(param TransferCheckedParam, isToken2022 bool) types.Instruction {
+	if isToken2022 {
+		return TransferChecked2022(param)
+	}
+	return TransferChecked(param)
+}
+
 type ApproveCheckedParam struct {
 	From     common.PublicKey
 	Mint     common.PublicKey
