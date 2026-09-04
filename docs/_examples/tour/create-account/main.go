@@ -5,8 +5,8 @@ import (
 
 	"github.com/blocto/solana-go-sdk/pkg/hdwallet"
 	"github.com/blocto/solana-go-sdk/types"
+	"github.com/fbsobreira/go-bip39"
 	"github.com/mr-tron/base58"
-	"github.com/tyler-smith/go-bip39"
 )
 
 func main() {

@@ -7,8 +7,8 @@ import (
 	"fmt"
 
 	"github.com/blocto/solana-go-sdk/common"
+	"github.com/fbsobreira/go-bip39"
 	"github.com/mr-tron/base58"
-	"github.com/tyler-smith/go-bip39"
 )
 
 var (
